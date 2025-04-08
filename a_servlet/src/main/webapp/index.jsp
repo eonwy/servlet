@@ -1,3 +1,5 @@
+<%@ page import="com.grepp.servlet.app.auth.Principal" %>
+<%@ page import="com.grepp.servlet.app.auth.Role" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <html>
 <head>
@@ -27,17 +29,39 @@
     <nav class="navbar white">
         <div class="nav-wrapper ">
             <a href="/" class="brand-logo grey-text">Grepp</a>
+            <% Principal principal = (Principal) session.getAttribute("principal");
+                if(principal == null || principal.role().contains(Role.ROLE_ANONYMOUS)){ %>
             <ul id="nav-mobile" class="right hide-on-med-and-down grey-text">
                 <li><a href="/member/login" class="grey-text">sign in</a></li>
-                <li><a href="badges.html" class="grey-text">sign up</a></li>
+                <li><a href="/member/signup" class="grey-text">sign up</a></li>
             </ul>
+            <% } else { %>
+            <ul id="nav-mobile" class="right hide-on-med-and-down grey-text">
+                <li><a href="/member/logout" class="grey-text">logout</a></li>
+            </ul>
+            <% } %>
         </div>
     </nav>
 </header>
 
-<div class="container" style="min-height: 85vh">
+<main class="container" >
+
+    <% if( request.getParameter("attr") != null && request.getParameter("attr").equals("signup")) { %>
+    <div class="card-panel deep-purple lighten-3 white-text">회원가입을 환영합니다!!</div>
+    <% } %>
+
+    <% if( request.getParameter("error") != null) { %>
+    <div class="card-panel red darken-3 lighten-3 white-text"><%= request.getParameter("error")%></div>
+    <% } %>
+
     <ul class="collection with-header">
-        <li class="collection-header"><h4>Welcome Servlet</h4></li>
+        <li class="collection-header">
+            <% if(principal == null || principal.role().contains(Role.ROLE_ANONYMOUS)){ %>
+            <h4>Welcome Servlet</h4>
+            <% } else { %>
+            <h4>Welcome <%= principal.userId() %></h4>
+            <% } %>
+        </li>
 
         <li class="collection-item">
             <div>GET<a href="/request/get?name=hmd" class="secondary-content"><i
@@ -70,11 +94,15 @@
                     class="material-icons">send</i></a></div>
         </li>
         <li class="collection-item">
-            <div>Cache<a href="/cache" class="secondary-content"><i class="material-icons">send</i></a>
+            <div>Cache<a href="/assets/img/bg.jpg" class="secondary-content"><i class="material-icons">send</i></a>
             </div>
         </li>
         <li class="collection-item">
-            <div>Filter<a href="/filter/error" class="secondary-content"><i class="material-icons">send</i></a>
+            <div>Exception Filter<a href="/filter/error" class="secondary-content"><i class="material-icons">send</i></a>
+            </div>
+        </li>
+        <li class="collection-item">
+            <div>ViewResolver Filter<a href="/filter/path" class="secondary-content"><i class="material-icons">send</i></a>
             </div>
         </li>
         <li class="collection-item">
@@ -82,7 +110,7 @@
             </div>
         </li>
     </ul>
-</div>
+</main>
 <footer class="page-footer">
     <div class="container">
         <div class="row">
